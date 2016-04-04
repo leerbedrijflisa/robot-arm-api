@@ -23,8 +23,8 @@ namespace Lisa.RobotArm.Api
             if (metadata == null)
             {
                 entity.Id = Guid.NewGuid();
-                entity.RowKey = entity.Id;
-                entity.PartitionKey = model.Slug;
+                entity.RowKey = entity.Id.ToString();
+                entity.PartitionKey = entity.Slug;
             }
             //else
             //{
@@ -37,7 +37,7 @@ namespace Lisa.RobotArm.Api
             return entity;
         }
 
-        public static DynamicModel ToModel(dynamic entity)
+        public static DynamicModel ToModel(dynamic entity, bool k)
         {
             if (entity == null)
             {
@@ -45,9 +45,13 @@ namespace Lisa.RobotArm.Api
             }
 
             dynamic model = new DynamicModel();
-            model.Slug = entity.Slug;
-            model.Contents = entity.Contents;
-
+            if (k)
+            {
+                model.Url = entity.Url;
+            } else {
+                model.Slug = entity.Slug;
+                model.Contents = entity.Contents;
+            }
             var metadata = new
             {
                 PartitionKey = entity.PartitionKey,

@@ -5,9 +5,8 @@ using Microsoft.WindowsAzure.Storage.Table;
 using System.Linq;
 using System;
 using Lisa.Common.TableStorage;
-using Lisa.Common.WebApi;
 
-namespace Lisa.RobotArm.Api.Database
+namespace Lisa.RobotArm.Api
 {
     public class TableStorage
     {
@@ -24,11 +23,11 @@ namespace Lisa.RobotArm.Api.Database
             TableQuerySegment<DynamicEntity> levelsInformation = await levels.ExecuteQuerySegmentedAsync(query, null);
 
             IEnumerable<object> result = levelsInformation.Results;
-            var Levels = levelsInformation.Select(L => LevelMapper.ToModel(L));
+            var Levels = levelsInformation.Select(L => LevelMapper.ToModel(L, false));
 
             return Levels;
         }
-        public static async Task<object> GetLevel(String Slug)
+        public static async Task<object> GetLevel(string slug, bool k)
         {
             var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
             var client = account.CreateCloudTableClient();
@@ -36,12 +35,16 @@ namespace Lisa.RobotArm.Api.Database
 
             await level.CreateIfNotExistsAsync();
 
-            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, Slug));
+            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, slug));
             TableQuerySegment<DynamicEntity> levelInformation = await level.ExecuteQuerySegmentedAsync(query, null);
 
             object result = levelInformation.SingleOrDefault();
-            var Level = levelInformation.Select(L => LevelMapper.ToModel(L));
+            if (result == null)
+            {
+                return null;
+            }
 
+            var Level = LevelMapper.ToModel(result, k);
             return Level;
         }
 
@@ -59,7 +62,7 @@ namespace Lisa.RobotArm.Api.Database
 
             await level.ExecuteAsync(InsertLevel);
 
-            var ToModel = LevelMapper.ToModel(NewLevel);
+            var ToModel = LevelMapper.ToModel(NewLevel, false);
 
             return ToModel;
         }

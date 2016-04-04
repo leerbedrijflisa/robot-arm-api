@@ -1,11 +1,9 @@
 ﻿using Lisa.Common.WebApi;
-using Lisa.RobotArm.Api.Database;
 using Microsoft.AspNet.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Lisa.RobotArm.Api.Controllers
+namespace Lisa.RobotArm.Api
 {
     [Route("levels")]
     public class LevelController : Controller
@@ -18,9 +16,9 @@ namespace Lisa.RobotArm.Api.Controllers
         }
 
         [HttpGet("{slug}", Name = "slug")]
-        public async Task<IActionResult> GetSingle(String Slug)
+        public async Task<IActionResult> GetSingle(string slug)
         {
-            object level = await TableStorage.GetLevel(Slug);
+            object level = await TableStorage.GetLevel(slug, false);
 
             if (level != null)
             {
@@ -33,6 +31,16 @@ namespace Lisa.RobotArm.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] DynamicModel levels)
         {
+            if (levels == null)
+            {
+                return new BadRequestResult();
+            }
+
+            var validatorResults = new LevelValidator().Validate(levels);
+            if (validatorResults.HasErrors)
+            {
+                return new UnprocessableEntityObjectResult(validatorResults.Errors); 
+            }
             dynamic level = await TableStorage.PostLevel(levels);
 
             string location = Url.RouteUrl("slug", new { slug = level.Slug }, Request.Scheme);
