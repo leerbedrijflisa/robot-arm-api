@@ -57,6 +57,16 @@ namespace Lisa.RobotArm.Api
 
             var NewLevel = LevelMapper.ToEntity(levels);
 
+            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, NewLevel.Slug));
+            TableQuerySegment<DynamicEntity> levelInformation = await level.ExecuteQuerySegmentedAsync(query, null);
+
+            object result = levelInformation.SingleOrDefault();
+
+            if (result != null)
+            {
+                return true;
+            }
+
             TableOperation InsertLevel = TableOperation.Insert(NewLevel);
 
             await level.ExecuteAsync(InsertLevel);

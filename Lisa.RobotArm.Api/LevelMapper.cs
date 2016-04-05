@@ -24,7 +24,7 @@ namespace Lisa.RobotArm.Api
             {
                 entity.Id = Guid.NewGuid();
                 entity.RowKey = entity.Id.ToString();
-                entity.PartitionKey = entity.Slug;
+                entity.PartitionKey = entity.Slug.ToString();
             }
             //else
             //{

@@ -43,6 +43,11 @@ namespace Lisa.RobotArm.Api
             }
             dynamic level = await TableStorage.PostLevel(levels);
 
+            if (level)
+            {
+                return new BadRequestResult();
+            }
+
             string location = Url.RouteUrl("slug", new { slug = level.Slug }, Request.Scheme);
 
             return new CreatedResult(location, level);
