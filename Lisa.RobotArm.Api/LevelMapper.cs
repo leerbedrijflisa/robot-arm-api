@@ -51,6 +51,7 @@ namespace Lisa.RobotArm.Api
             } else {
                 model.Slug = entity.Slug;
                 model.Contents = entity.Contents;
+                model.Url = entity.Url;
             }
             var metadata = new
             {
