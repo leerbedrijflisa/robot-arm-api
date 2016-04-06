@@ -60,11 +60,9 @@ namespace Lisa.RobotArm.Api
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, NewLevel.Slug));
             TableQuerySegment<DynamicEntity> levelInformation = await level.ExecuteQuerySegmentedAsync(query, null);
 
-            object result = levelInformation.SingleOrDefault();
-
-            if (result != null)
+            if (levelInformation.Count() > 0)
             {
-                return true;
+                return null;
             }
 
             TableOperation InsertLevel = TableOperation.Insert(NewLevel);

@@ -41,11 +41,12 @@ namespace Lisa.RobotArm.Api
             {
                 return new UnprocessableEntityObjectResult(validatorResults.Errors); 
             }
+
             dynamic level = await TableStorage.PostLevel(levels);
 
-            if (level)
+            if (level == null)
             {
-                return new BadRequestResult();
+                return new UnprocessableEntityObjectResult("The slug is already in use.");
             }
 
             string location = Url.RouteUrl("slug", new { slug = level.Slug }, Request.Scheme);
