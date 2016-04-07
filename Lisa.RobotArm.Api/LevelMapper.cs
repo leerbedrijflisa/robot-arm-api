@@ -17,7 +17,7 @@ namespace Lisa.RobotArm.Api
             dynamic entity = new DynamicEntity();
             entity.Slug = model.Slug;
             entity.Contents = model.Contents;
-            entity.Url = "http://www.robotarm.com/repository/" + model.Slug;
+            entity.Url = "localhost:31415/repository/" + model.Slug;
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
