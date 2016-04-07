@@ -47,7 +47,7 @@ namespace Lisa.RobotArm.Api
             dynamic model = new DynamicModel();
             if (k)
             {
-                model.Url = entity.Url;
+                model.Url = entity.Contents;
             } else {
                 model.Slug = entity.Slug;
                 model.Contents = entity.Contents;

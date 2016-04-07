@@ -1,6 +1,7 @@
 ﻿using Lisa.Common.WebApi;
 using Microsoft.AspNet.Mvc;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Lisa.RobotArm.Api
@@ -42,7 +43,10 @@ namespace Lisa.RobotArm.Api
                 return new UnprocessableEntityObjectResult(validatorResults.Errors); 
             }
 
-            dynamic level = await TableStorage.PostLevel(levels);
+            dynamic Data = levels;
+            Data.slug = Regex.Replace(Data.slug, @"[^\w\d]", "");
+
+            dynamic level = await TableStorage.PostLevel(Data);
 
             if (level == null)
             {

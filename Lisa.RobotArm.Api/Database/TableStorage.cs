@@ -4,6 +4,8 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Linq;
 using Lisa.Common.TableStorage;
+using System.Text.RegularExpressions;
+using Lisa.Common.WebApi;
 
 namespace Lisa.RobotArm.Api
 {
