@@ -44,7 +44,7 @@ namespace Lisa.RobotArm.Api
             }
 
             dynamic Data = levels;
-            Data.slug = Regex.Replace(Data.slug, @"[^\w\d]", "");
+            Data.slug = Regex.Replace(Data.slug.ToString(), @"[^\w\d]", "");
 
             dynamic level = await TableStorage.PostLevel(Data);
 
