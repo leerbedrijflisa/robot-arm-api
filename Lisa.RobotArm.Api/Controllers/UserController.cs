@@ -7,8 +7,8 @@ namespace Lisa.RobotArm.Api.Controllers
     [Route("user")]
     public class UserController
     {
-        [HttpGet("{username}/{password}")]
-        public async Task<IActionResult> GetUser(string username, string password)
+        [HttpGet]
+        public async Task<IActionResult> GetUser([FromHeader] string username, [FromHeader] string password)
         {
             object user = await TableStorage.GetUser(username, password);
 
