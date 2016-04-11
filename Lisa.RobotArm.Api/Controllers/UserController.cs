@@ -7,14 +7,14 @@ namespace Lisa.RobotArm.Api.Controllers
     [Route("user")]
     public class UserController
     {
-        [HttpGet("{username}")]
-        public async Task<IActionResult> GetUser(string username)
+        [HttpGet("{username}/{password}")]
+        public async Task<IActionResult> GetUser(string username, string password)
         {
-            object user = await TableStorage.GetUser(username);
+            object user = await TableStorage.GetUser(username, password);
 
             if (user == null)
             {
-                return new UnprocessableEntityObjectResult("The username is not correct or is not registered");
+                return new UnprocessableEntityObjectResult("The username or password is not correct or is not registered");
             }
 
             return new HttpOkObjectResult(user);

@@ -74,7 +74,7 @@ namespace Lisa.RobotArm.Api
             return ToModel;
         }
 
-        public static async Task<object> GetUser(string username)
+        public static async Task<object> GetUser(string username, string password)
         {
             var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
             var client = account.CreateCloudTableClient();
@@ -89,7 +89,14 @@ namespace Lisa.RobotArm.Api
             if (result == null)
             {
                 return null;
-            } 
+            }
+
+            dynamic data = result;
+            if (data.password != password)
+            {
+                return null;
+            }
+
             var User = UserMapper.ToModel(result);
 
             return User;
