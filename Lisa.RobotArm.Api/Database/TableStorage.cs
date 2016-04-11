@@ -73,5 +73,26 @@ namespace Lisa.RobotArm.Api
 
             return ToModel;
         }
+
+        public static async Task<object> GetUser(string username)
+        {
+            var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+            var client = account.CreateCloudTableClient();
+            var user = client.GetTableReference("Users");
+
+            await user.CreateIfNotExistsAsync();
+
+            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("userName", QueryComparisons.Equal, username));
+            TableQuerySegment<DynamicEntity> UserInformation = await user.ExecuteQuerySegmentedAsync(query, null);
+
+            object result = UserInformation.SingleOrDefault();
+            if (result == null)
+            {
+                return null;
+            } 
+            var User = UserMapper.ToModel(result);
+
+            return User;
+        }
     }
 }

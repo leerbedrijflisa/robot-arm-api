@@ -7,10 +7,17 @@ namespace Lisa.RobotArm.Api.Controllers
     [Route("user")]
     public class UserController
     {
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetUser(string username)
         {
-            
+            object user = await TableStorage.GetUser(username);
+
+            if (user == null)
+            {
+                return new UnprocessableEntityObjectResult("The username is not correct or is not registered");
+            }
+
+            return new HttpOkObjectResult(user);
         }
     }
 }
