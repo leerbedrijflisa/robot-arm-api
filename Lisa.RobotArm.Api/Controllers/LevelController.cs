@@ -50,7 +50,7 @@ namespace Lisa.RobotArm.Api
 
             if (level == null)
             {
-                return new UnprocessableEntityObjectResult("The slug is already in use.");
+                return new UnprocessableEntityObjectResult("This slug is already in use.");
             }
 
             string location = Url.RouteUrl("slug", new { slug = level.Slug }, Request.Scheme);

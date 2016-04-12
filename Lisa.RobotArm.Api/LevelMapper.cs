@@ -16,7 +16,7 @@ namespace Lisa.RobotArm.Api
 
             dynamic entity = new DynamicEntity();
             entity.Slug = model.Slug.ToString();
-            entity.Contents = model.Contents;
+            entity.Contents = model.Contents.ToString();
             entity.Url = "localhost:31415/repository/" + model.Slug;
 
             dynamic metadata = model.GetMetadata();
@@ -26,13 +26,6 @@ namespace Lisa.RobotArm.Api
                 entity.RowKey = entity.Id.ToString();
                 entity.PartitionKey = entity.Slug.ToString();
             }
-            //else
-            //{
-            //    entity.Id = model.Id;
-            //    entity.Observations = JsonConvert.SerializeObject(model.Observations);
-            //    entity.PartitionKey = metadata.PartitionKey;
-            //    entity.RowKey = metadata.RowKey;
-            //}
 
             return entity;
         }
