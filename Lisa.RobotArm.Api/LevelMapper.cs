@@ -15,7 +15,7 @@ namespace Lisa.RobotArm.Api
             }
 
             dynamic entity = new DynamicEntity();
-            entity.Slug = model.Slug;
+            entity.Slug = model.Slug.ToString();
             entity.Contents = model.Contents;
             entity.Url = "localhost:31415/repository/" + model.Slug;
 
@@ -47,9 +47,9 @@ namespace Lisa.RobotArm.Api
             dynamic model = new DynamicModel();
             if (k)
             {
-                model.Url = entity.Url;
+                model.Url = entity.Contents;
             } else {
-                model.Slug = entity.Slug;
+                model.Slug = entity.Slug.ToString();
                 model.Contents = entity.Contents;
                 model.Url = entity.Url;
             }
