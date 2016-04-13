@@ -41,7 +41,7 @@ namespace Lisa.RobotArm.Api
             if (k)
             {
                 model.Url = entity.Contents;
-                model.Contents = entity.Contents;
+                model.Contents = entity.Contents.ToString();
             } else {
                 model.Slug = entity.Slug.ToString();
                 model.Contents = entity.Contents;
