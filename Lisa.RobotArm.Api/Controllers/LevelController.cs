@@ -46,13 +46,17 @@ namespace Lisa.RobotArm.Api
             dynamic Data = levels;
             Data.slug = Regex.Replace(Data.slug.ToString(), @"[^\w\d]", "");
 
+            if (Data.slug == "")
+            {
+                return new UnprocessableEntityObjectResult("Slug cannot be empty");
+            }
+
             dynamic level = await TableStorage.PostLevel(Data);
 
             if (level == null)
             {
                 return new UnprocessableEntityObjectResult("This slug is already in use.");
             }
-
             string location = Url.RouteUrl("slug", new { slug = level.Slug }, Request.Scheme);
 
             return new CreatedResult(location, level);
