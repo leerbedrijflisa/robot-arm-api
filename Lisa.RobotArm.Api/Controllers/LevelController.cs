@@ -48,7 +48,7 @@ namespace Lisa.RobotArm.Api
 
             if (Data.slug == "")
             {
-                return new UnprocessableEntityObjectResult("Slug cannot be empty");
+                return new UnprocessableEntityObjectResult("This is not a valid slug.");
             }
 
             dynamic level = await TableStorage.PostLevel(Data);
