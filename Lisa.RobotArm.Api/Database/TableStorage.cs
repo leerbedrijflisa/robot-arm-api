@@ -4,40 +4,36 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Linq;
 using Lisa.Common.TableStorage;
-using System.Text.RegularExpressions;
-using Lisa.Common.WebApi;
+using Microsoft.Extensions.OptionsModel;
 
 namespace Lisa.RobotArm.Api
 {
     public class TableStorage
     {
-        public static async Task<IEnumerable<object>> GetLevels()
+        public TableStorage(IOptions<TableStorageSettings> settings)
         {
-            var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
-            var client = account.CreateCloudTableClient();
-            var levels = client.GetTableReference("Levels");
+            _settings = settings.Value;
+        }
 
-
-            await levels.CreateIfNotExistsAsync();
+        public async Task<IEnumerable<object>> GetLevels()
+        {
+            CloudTable table = await Connect("Levels");
 
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>();
-            TableQuerySegment<DynamicEntity> levelsInformation = await levels.ExecuteQuerySegmentedAsync(query, null);
+            TableQuerySegment<DynamicEntity> levelsInformation = await table.ExecuteQuerySegmentedAsync(query, null);
 
             IEnumerable<object> result = levelsInformation.Results;
             var Levels = levelsInformation.Select(L => LevelMapper.ToModel(L, false));
 
             return Levels;
         }
-        public static async Task<object> GetLevel(string slug, bool k)
-        {
-            var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
-            var client = account.CreateCloudTableClient();
-            var level = client.GetTableReference("Levels");
 
-            await level.CreateIfNotExistsAsync();
+        public async Task<object> GetLevel(string slug, bool k)
+        {
+            CloudTable table = await Connect("Levels");
 
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, slug));
-            TableQuerySegment<DynamicEntity> levelInformation = await level.ExecuteQuerySegmentedAsync(query, null);
+            TableQuerySegment<DynamicEntity> levelInformation = await table.ExecuteQuerySegmentedAsync(query, null);
 
             object result = levelInformation.SingleOrDefault();
             if (result == null)
@@ -49,18 +45,14 @@ namespace Lisa.RobotArm.Api
             return Level;
         }
 
-        public static async Task<object> PostLevel(dynamic levels)
+        public async Task<object> PostLevel(dynamic level)
         {
-            var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
-            var client = account.CreateCloudTableClient();
-            var level = client.GetTableReference("Levels");
+            CloudTable table = await Connect("Levels");
 
-            await level.CreateIfNotExistsAsync();
-
-            var NewLevel = LevelMapper.ToEntity(levels);
+            var NewLevel = LevelMapper.ToEntity(level);
 
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, NewLevel.Slug));
-            TableQuerySegment<DynamicEntity> levelInformation = await level.ExecuteQuerySegmentedAsync(query, null);
+            TableQuerySegment<DynamicEntity> levelInformation = await table.ExecuteQuerySegmentedAsync(query, null);
 
             if (levelInformation.Count() > 0)
             {
@@ -69,23 +61,19 @@ namespace Lisa.RobotArm.Api
 
             TableOperation InsertLevel = TableOperation.Insert(NewLevel);
 
-            await level.ExecuteAsync(InsertLevel);
+            await table.ExecuteAsync(InsertLevel);
 
             var ToModel = LevelMapper.ToModel(NewLevel, false);
 
             return ToModel;
         }
 
-        public static async Task<object> GetUser(string username, string password)
+        public async Task<object> GetUser(string username, string password)
         {
-            var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
-            var client = account.CreateCloudTableClient();
-            var user = client.GetTableReference("Users");
-
-            await user.CreateIfNotExistsAsync();
+            CloudTable table = await Connect("Users");
 
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("userName", QueryComparisons.Equal, username));
-            TableQuerySegment<DynamicEntity> UserInformation = await user.ExecuteQuerySegmentedAsync(query, null);
+            TableQuerySegment<DynamicEntity> UserInformation = await table.ExecuteQuerySegmentedAsync(query, null);
 
             object result = UserInformation.SingleOrDefault();
             if (result == null)
@@ -103,5 +91,17 @@ namespace Lisa.RobotArm.Api
 
             return User;
         }
+
+        private async Task<CloudTable> Connect(string tableName)
+        {
+            var account = CloudStorageAccount.Parse(_settings.ConnectionString);
+            var client = account.CreateCloudTableClient();
+            var table = client.GetTableReference(tableName);
+            await table.CreateIfNotExistsAsync();
+
+            return table;
+        }
+
+        private TableStorageSettings _settings;
     }
 }

@@ -9,17 +9,22 @@ namespace Lisa.RobotArm.Api
     [Route("levels")]
     public class LevelController : Controller
     {
+        public LevelController(TableStorage database)
+        {
+            _db = database;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            IEnumerable<object> levels = await TableStorage.GetLevels();
+            IEnumerable<object> levels = await _db.GetLevels();
             return new HttpOkObjectResult(levels);
         }
 
         [HttpGet("{slug}", Name = "slug")]
         public async Task<IActionResult> GetSingle(string slug)
         {
-            object level = await TableStorage.GetLevel(slug, false);
+            object level = await _db.GetLevel(slug, false);
 
             if (level != null)
             {
@@ -51,7 +56,7 @@ namespace Lisa.RobotArm.Api
                 return new UnprocessableEntityObjectResult("This is not a valid slug.");
             }
 
-            dynamic level = await TableStorage.PostLevel(Data);
+            dynamic level = await _db.PostLevel(Data);
 
             if (level == null)
             {
@@ -61,5 +66,7 @@ namespace Lisa.RobotArm.Api
 
             return new CreatedResult(location, level);
         }
+
+        private TableStorage _db;
     }
 }

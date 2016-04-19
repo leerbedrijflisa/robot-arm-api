@@ -7,10 +7,15 @@ namespace Lisa.RobotArm.Api.Controllers
     [Route("user")]
     public class UserController
     {
+        public UserController(TableStorage database)
+        {
+            _db = database;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetUser([FromHeader] string username, [FromHeader] string password)
         {
-            object user = await TableStorage.GetUser(username, password);
+            object user = await _db.GetUser(username, password);
 
             if (user == null)
             {
@@ -19,5 +24,7 @@ namespace Lisa.RobotArm.Api.Controllers
 
             return new HttpOkObjectResult(user);
         }
+
+        private TableStorage _db;
     }
 }
