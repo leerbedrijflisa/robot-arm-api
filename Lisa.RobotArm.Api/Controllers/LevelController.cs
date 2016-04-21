@@ -42,27 +42,22 @@ namespace Lisa.RobotArm.Api
                 return new BadRequestResult();
             }
 
-            var validatorResults = new LevelValidator().Validate(levels);
+            dynamic data = levels;
+            data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
+            string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
+
+            var validatorResults = new LevelValidator().Validate(data);
             if (validatorResults.HasErrors)
             {
                 return new UnprocessableEntityObjectResult(validatorResults.Errors); 
             }
 
-            dynamic Data = levels;
-            Data.slug = Regex.Replace(Data.slug.ToString(), @"[^\w\d]", "");
-
-            if (Data.slug == "")
-            {
-                return new UnprocessableEntityObjectResult("This is not a valid slug.");
-            }
-
-            dynamic level = await _db.PostLevel(Data);
+            dynamic level = await _db.PostLevel(data, location);
 
             if (level == null)
             {
-                return new UnprocessableEntityObjectResult("This slug is already in use.");
+                return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 422, Message = "This slug is already in use.", Values = new { field = "slug", value = data.slug } } });
             }
-            string location = Url.RouteUrl("slug", new { slug = level.Slug }, Request.Scheme);
 
             return new CreatedResult(location, level);
         }
