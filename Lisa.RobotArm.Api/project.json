@@ -9,6 +9,9 @@
     "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
     "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
     "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+    "System.IdentityModel.Tokens": "5.0.0-rc1-211161024",
+    "System.IdentityModel.Tokens.Jwt": "5.0.0-rc1-211161024",
+    "System.Text.Encoding": "4.0.11-beta-23516",
     "WindowsAzure.Storage": "6.2.2-preview"
   },
 
@@ -17,8 +20,16 @@
   },
 
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": { }
+    "dnx451": {
+      "dependencies": {
+        "System.IdentityModel.Tokens.Jwt": "4.0.2.206221351"
+      }
+    },
+    "dnxcore50": {
+      "dependencies": {
+        "System.Security.Cryptography.Csp": "4.0.0-beta-23516"
+      }
+    }
   },
 
   "exclude": [
