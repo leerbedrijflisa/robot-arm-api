@@ -41,16 +41,16 @@ namespace Lisa.RobotArm.Api
             {
                 return new BadRequestResult();
             }
-
             dynamic data = levels;
-            data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
-            string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
 
             var validatorResults = new LevelValidator().Validate(data);
             if (validatorResults.HasErrors)
             {
                 return new UnprocessableEntityObjectResult(validatorResults.Errors); 
             }
+
+            data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
+            string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
 
             dynamic level = await _db.PostLevel(data, location);
 
