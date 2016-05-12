@@ -7,7 +7,7 @@ namespace Lisa.RobotArm.Api
         protected override void ValidateModel()
         {
             Ignore("id");
-            Required("Slug", NotEmpty, TypeOf(DataTypes.String | DataTypes.Object));
+            Required("Slug", NotEmpty, TypeOf(DataTypes.String));
             Required("Contents", NotEmpty);
         }
     }
