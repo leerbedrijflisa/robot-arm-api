@@ -49,6 +49,7 @@ namespace Lisa.RobotArm.Api
                 return new UnprocessableEntityObjectResult(validatorResults.Errors); 
             }
 
+            data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
             data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
             string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
 
