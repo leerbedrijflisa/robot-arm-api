@@ -52,14 +52,39 @@ namespace Lisa.RobotArm.Api
             data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
             data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
             string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
+            var url = Request.Host + "/";
 
-            dynamic level = await _db.PostLevel(data, location);
+            dynamic level = await _db.PostLevel(data, url);
 
             if (level == null)
             {
                 return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 422, Message = "This slug is already in use.", Values = new { field = "slug", value = data.slug } } });
             }
 
+            return new CreatedResult(location, level);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] DynamicModel levelinput)
+        {
+            if (levelinput == null)
+            {
+                return new BadRequestResult();
+            }
+            dynamic data = levelinput;
+
+            var validatorResults = new LevelValidator().Validate(data);
+            if (validatorResults.HasErrors)
+            {
+                return new UnprocessableEntityObjectResult(validatorResults.Errors);
+            }
+
+            data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
+            data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
+            string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
+            var url = Request.Host + "/";
+
+            dynamic level = await _db.PutLevel(data, url);
             return new CreatedResult(location, level);
         }
 

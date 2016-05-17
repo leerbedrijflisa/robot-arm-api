@@ -7,7 +7,7 @@ namespace Lisa.RobotArm.Api
 {
     public class LevelMapper
     {
-        public static ITableEntity ToEntity(dynamic model, object location)
+        public static ITableEntity ToEntity(dynamic model, object urlLocation)
         {
             if (model == null)
             {
@@ -17,7 +17,7 @@ namespace Lisa.RobotArm.Api
             dynamic entity = new DynamicEntity();
             entity.Slug = model.Slug.ToString();
             entity.Contents = model.Contents.ToString();
-            entity.Url = location;
+            entity.Url = urlLocation.ToString();
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
