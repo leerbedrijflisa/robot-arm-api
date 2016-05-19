@@ -28,7 +28,7 @@ namespace Lisa.RobotArm.Api
             return Levels;
         }
 
-        public async Task<object> GetLevel(string slug, bool k)
+        public async Task<object> GetLevel(string slug, bool GetRepository)
         {
             CloudTable table = await Connect("Levels");
 
@@ -41,15 +41,14 @@ namespace Lisa.RobotArm.Api
                 return null;
             }
 
-            var Level = LevelMapper.ToModel(result, k);
+            var Level = LevelMapper.ToModel(result, GetRepository);
             return Level;
         }
 
         public async Task<object> PostLevel(dynamic level, object url)
         {
             CloudTable table = await Connect("Levels");
-            var urlLocation = url + "/repository/" + level.Slug;
-            var NewLevel = LevelMapper.ToEntity(level, urlLocation);
+            var NewLevel = LevelMapper.ToEntity(level, url);
 
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, NewLevel.Slug));
             TableQuerySegment<DynamicEntity> levelInformation = await table.ExecuteQuerySegmentedAsync(query, null);

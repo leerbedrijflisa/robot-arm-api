@@ -41,8 +41,10 @@ namespace Lisa.RobotArm.Api
             {
                 return new BadRequestResult();
             }
-            dynamic data = levels;
 
+            dynamic data = levels;
+            var url = Request.Host + "/repository/" + data.slug;
+       
             var validatorResults = new LevelValidator().Validate(data);
             if (validatorResults.HasErrors)
             {
@@ -51,8 +53,6 @@ namespace Lisa.RobotArm.Api
 
             data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
             data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
-            string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
-            var url = Request.Host + "/";
 
             dynamic level = await _db.PostLevel(data, url);
 
@@ -61,6 +61,7 @@ namespace Lisa.RobotArm.Api
                 return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 422, Message = "This slug is already in use.", Values = new { field = "slug", value = data.slug } } });
             }
 
+            string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
             return new CreatedResult(location, level);
         }
 
