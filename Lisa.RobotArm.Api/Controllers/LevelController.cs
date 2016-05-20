@@ -65,13 +65,9 @@ namespace Lisa.RobotArm.Api
             return new CreatedResult(location, level);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Put([FromBody] DynamicModel levelinput)
+        [HttpPut("{oldSlug}")]
+        public async Task<IActionResult> Put([FromBody] DynamicModel levelinput, string oldSlug)
         {
-            if (levelinput == null)
-            {
-                return new BadRequestResult();
-            }
             dynamic data = levelinput;
 
             var validatorResults = new LevelValidator().Validate(data);
@@ -83,10 +79,11 @@ namespace Lisa.RobotArm.Api
             data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
             data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
             string location = Url.RouteUrl("slug", new { slug = data.Slug }, Request.Scheme);
-            var url = Request.Host + "/";
+            var url = Request.Host + "/repository/" + data.slug;
 
-            dynamic level = await _db.PutLevel(data, url);
-            return new CreatedResult(location, level);
+            dynamic levels = await _db.PutLevel(data, url, oldSlug);
+
+            return new HttpOkObjectResult(levels);
         }
 
         private TableStorage _db;

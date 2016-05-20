@@ -41,7 +41,7 @@ namespace Lisa.RobotArm.Api
                 return null;
             }
 
-            var Level = LevelMapper.ToModel(result, GetRepository);
+            dynamic Level = LevelMapper.ToModel(result, GetRepository);
             return Level;
         }
 
@@ -67,17 +67,27 @@ namespace Lisa.RobotArm.Api
             return ToModel;
         }
 
-        public async Task<object> PutLevel(dynamic levelinput, object url)
+        public async Task<object> PutLevel(dynamic levelInput, object url, string oldSlug)
         {
             CloudTable table = await Connect("Levels");
-            var urlLocation = url + "/repository/" + levelinput.Slug;
-            var InputLevel = LevelMapper.ToEntity(levelinput, urlLocation);
+            var InputLevel = LevelMapper.ToEntity(levelInput, url);
 
-            TableOperation InsertLevel = TableOperation.Insert(InputLevel);
+            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, oldSlug));
+            TableQuerySegment<DynamicEntity> levelData = await table.ExecuteQuerySegmentedAsync(query, null);
 
+            if (levelData.Count() == 0)
+            {
+                return null;
+            }
+            dynamic levelInformation = levelData.FirstOrDefault();
+            levelInformation.Contents = InputLevel.Contents;
+            levelInformation.Slug = InputLevel.Slug;
+            levelInformation.Url = url;
+
+            TableOperation InsertLevel = TableOperation.Replace(levelInformation);
             await table.ExecuteAsync(InsertLevel);
 
-            var ToModel = LevelMapper.ToModel(InputLevel, false);
+            var ToModel = LevelMapper.ToModel(levelInformation, false);
 
             return ToModel;
         }
