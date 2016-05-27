@@ -83,7 +83,7 @@ namespace Lisa.RobotArm.Api
 
             dynamic levels = await _db.PutLevel(data, url, oldSlug);
 
-            if(levels == false)
+            if(levels == null)
             {
                 return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 422, Message = "This slug is already in use.", Values = new { field = "slug", value = data.slug } } });
             }

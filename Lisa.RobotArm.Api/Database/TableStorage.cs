@@ -74,15 +74,22 @@ namespace Lisa.RobotArm.Api
 
             TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, oldSlug));
             TableQuerySegment<DynamicEntity> levelData = await table.ExecuteQuerySegmentedAsync(query, null);
+            dynamic levelInformation = levelData.FirstOrDefault();
+
+            TableQuery<DynamicEntity> query1 = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("Slug", QueryComparisons.Equal, InputLevel.Slug));
+            TableQuerySegment<DynamicEntity> levelData2 = await table.ExecuteQuerySegmentedAsync(query1, null);
+            dynamic levelInformation2 = levelData2.FirstOrDefault();
 
             if (levelData.Count() == 0)
             {
                 return null;
             }
-            dynamic levelInformation = levelData.FirstOrDefault();
-            if (levelInformation.Slug == InputLevel.Slug)
+            if (levelInformation2 != null)
             {
-                return false;
+                if (levelInformation2.Slug == levelInput.Slug)
+                {
+                    return null;
+                }
             }
             levelInformation.Contents = InputLevel.Contents;
             levelInformation.Slug = InputLevel.Slug;
