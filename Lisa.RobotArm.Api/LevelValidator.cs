@@ -8,7 +8,7 @@ namespace Lisa.RobotArm.Api
         {
             Ignore("id");
             Required("slug", NotEmpty, TypeOf(DataTypes.String));
-            Required("contents", NotEmpty);
+            Required("contents", NotEmpty, TypeOf(DataTypes.String));
         }
     }
 }

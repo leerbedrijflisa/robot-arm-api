@@ -43,7 +43,6 @@ namespace Lisa.RobotArm.Api
             }
 
             dynamic data = levels;
-            var url = Request.Host + "/repository/" + data.slug;
        
             var validatorResults = new LevelValidator().Validate(data);
             if (validatorResults.HasErrors)
@@ -54,6 +53,7 @@ namespace Lisa.RobotArm.Api
             data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
             data.slug = Regex.Replace(data.slug.ToString(), @"[^\w\d]", "");
 
+            var url = Request.Host + "/repository/" + data.slug;
             dynamic level = await _db.PostLevel(data, url);
 
             if (level == null)
