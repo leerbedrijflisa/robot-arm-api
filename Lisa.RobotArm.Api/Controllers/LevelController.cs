@@ -1,5 +1,5 @@
 ﻿using Lisa.Common.WebApi;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace Lisa.RobotArm.Api
         public async Task<IActionResult> Get()
         {
             IEnumerable<object> levels = await _db.GetLevels();
-            return new HttpOkObjectResult(levels);
+            return new OkObjectResult(levels);
         }
 
         [HttpGet("{slug}", Name = "slug")]
@@ -28,10 +28,10 @@ namespace Lisa.RobotArm.Api
 
             if (level != null)
             {
-                return new HttpOkObjectResult(level);
+                return new OkObjectResult(level);
             }
 
-            return new HttpNotFoundResult();
+            return new NotFoundResult();
         }
 
         [HttpPost]
@@ -73,7 +73,7 @@ namespace Lisa.RobotArm.Api
             var validatorResults = new LevelValidator().Validate(data);
             if (validatorResults.HasErrors)
             {
-                return new UnprocessableEntityObjectResult(validatorResults.Errors);
+                //return new UnprocessableEntityObjectResult(validatorResults.Errors);
             }
 
             data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
@@ -83,7 +83,7 @@ namespace Lisa.RobotArm.Api
 
             dynamic levels = await _db.PutLevel(data, url, oldSlug);
 
-            return new HttpOkObjectResult(levels);
+            return new OkObjectResult(levels);
         }
 
         private TableStorage _db;

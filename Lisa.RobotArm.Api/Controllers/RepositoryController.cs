@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace Lisa.RobotArm.Api.Controllers
@@ -18,10 +18,10 @@ namespace Lisa.RobotArm.Api.Controllers
 
             if (repository != null)
             {
-                return new HttpOkObjectResult(repository.Contents);
+                return new OkObjectResult(repository.Contents);
             }
 
-            return new HttpNotFoundResult();
+            return new NotFoundResult();
         }
 
         private TableStorage _db;
