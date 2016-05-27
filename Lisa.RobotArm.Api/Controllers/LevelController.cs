@@ -73,7 +73,7 @@ namespace Lisa.RobotArm.Api
             var validatorResults = new LevelValidator().Validate(data);
             if (validatorResults.HasErrors)
             {
-                //return new UnprocessableEntityObjectResult(validatorResults.Errors);
+                return new UnprocessableEntityObjectResult(validatorResults.Errors);
             }
 
             data.slug = Regex.Replace(data.slug.ToString(), @"\s+", "_");
@@ -83,6 +83,10 @@ namespace Lisa.RobotArm.Api
 
             dynamic levels = await _db.PutLevel(data, url, oldSlug);
 
+            if(levels == false)
+            {
+                return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 422, Message = "This slug is already in use.", Values = new { field = "slug", value = data.slug } } });
+            }
             return new OkObjectResult(levels);
         }
 

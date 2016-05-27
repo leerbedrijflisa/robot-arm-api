@@ -80,6 +80,10 @@ namespace Lisa.RobotArm.Api
                 return null;
             }
             dynamic levelInformation = levelData.FirstOrDefault();
+            if (levelInformation.Slug == InputLevel.Slug)
+            {
+                return false;
+            }
             levelInformation.Contents = InputLevel.Contents;
             levelInformation.Slug = InputLevel.Slug;
             levelInformation.Url = url;
