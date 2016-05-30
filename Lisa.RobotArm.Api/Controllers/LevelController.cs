@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Lisa.RobotArm.Api
 {
@@ -82,8 +83,11 @@ namespace Lisa.RobotArm.Api
             var url = Request.Host + "/repository/" + data.slug;
 
             dynamic levels = await _db.PutLevel(data, url, oldSlug);
-
-            if(levels == null)
+            if (levels.error == "notFound")
+            {
+                return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 411, Message = "The level " + oldSlug + " does not exist", Values = new { field = "slug", value = data.slug } } });
+            }
+            if(levels.error == "slugInUse")
             {
                 return new UnprocessableEntityObjectResult(new List<Error>() { new Error { Code = 422, Message = "This slug is already in use.", Values = new { field = "slug", value = data.slug } } });
             }
