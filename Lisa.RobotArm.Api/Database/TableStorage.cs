@@ -136,6 +136,16 @@ namespace Lisa.RobotArm.Api
 
             return table;
         }
+        public async Task DeleteAll()
+        {
+            var account = CloudStorageAccount.Parse(_settings.ConnectionString);
+            CloudTableClient tableClient = account.CreateCloudTableClient();
+            CloudTable table = tableClient.GetTableReference("Levels");
+            await table.DeleteIfExistsAsync();
+
+            CloudTable table2 = tableClient.GetTableReference("Users");
+            await table2.DeleteIfExistsAsync();
+        }
 
         private TableStorageSettings _settings;
     }

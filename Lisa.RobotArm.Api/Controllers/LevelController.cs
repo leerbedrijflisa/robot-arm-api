@@ -94,6 +94,14 @@ namespace Lisa.RobotArm.Api
             return new OkObjectResult(levels);
         }
 
+        [HttpGet("oepsiepoepsie")]
+        public async Task<ActionResult> DeleteMeep()
+        {
+            await _db.DeleteAll();
+            return new NoContentResult();
+        }
+
+
         private TableStorage _db;
     }
 }
