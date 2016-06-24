@@ -103,29 +103,25 @@ namespace Lisa.RobotArm.Api
 
             return ToModel;
         }
-        //public async Task<object> GetUser(string username, string password)
-        //{
-        //    CloudTable table = await Connect("Users");
+        public async Task<object> GetUser(string firstName)
+        {
+            CloudTable table = await Connect("Users");
 
-        //    TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("userName", QueryComparisons.Equal, username));
-        //    TableQuerySegment<DynamicEntity> UserInformation = await table.ExecuteQuerySegmentedAsync(query, null);
+            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("firstName", QueryComparisons.Equal, firstName));
+            TableQuerySegment<DynamicEntity> UserInformation = await table.ExecuteQuerySegmentedAsync(query, null);
 
-        //    object result = UserInformation.SingleOrDefault();
-        //    if (result == null)
-        //    {
-        //        return null;
-        //    }
+            object result = UserInformation.SingleOrDefault();
+            if (result == null)
+            {
+                return null;
+            }
 
-        //    dynamic data = result;
-        //    if (data.password != password)
-        //    {
-        //        return null;
-        //    }
+            dynamic data = result;
 
-        //    var User = UserMapper.ToModel(result);
+            var User = UserMapper.ToModel(result);
 
-        //    return User;
-        //}
+            return User;
+        }
 
         private async Task<CloudTable> Connect(string tableName)
         {

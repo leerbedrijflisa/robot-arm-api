@@ -14,7 +14,7 @@ namespace Lisa.RobotArm.Api
 
             dynamic model = new DynamicModel();
 
-            model.name = entity.name;
+            model.firstName = entity.firstName;
             model.lastName = entity.lastName;
             model.userName = entity.userName;
             model.email = entity.email;
